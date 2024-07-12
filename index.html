@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Preguntas y Respuestas</title>
+    <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+    <link rel="icon" href="./Pauelo-removebg-preview.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .question-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .option-btn:hover {
+            background-color: #45a049;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Juego de Preguntas y Respuestas</h1>
+        <div class="question-container">
+            <p id="pregunta">Presiona Empezar para iniciar el juego...</p>
+            <div class="options-container" id="optionsContainer">
+                <!-- Opciones se añadirán dinámicamente aquí -->
+            </div>
+        </div>
+        <button id="btnEmpezar" onclick="empezar()"
+        style="
+        
+        border: none;
+        background-color: #45a049;
+        height: 45px;
+        width: 100px;
+        border-radius: 10px;
+        color: white;
+        font-family: 'Open Sans';
+        font-size: 18px;
+        font-weight: bold;
+        ">Empezar!</button>
+        <div id="score" class="score" style="display: none;">Puntuación: <span id="scoreValue">0</span></div>
+    </div>
+
+    <script>
+        const preguntasRespuestas = [
+            {
+                pregunta: "¿Qué fueron los centros clandestinos?",
+                opciones: ["Lugares secretos utilizados para detener, interrogar y torturar.", "Lugares públicos de encuentro social.", "Centros de entretenimiento clandestinos."],
+                respuesta: "Lugares secretos utilizados para detener, interrogar y torturar.",
+                puntos: 10
+            },
+            {
+                pregunta: "¿Qué fue la dictadura cívico-militar?",
+                opciones: ["Un período de control democrático.", "Un régimen militar que tomó el poder por la fuerza.", "Un movimiento de liberación popular."],
+                respuesta: "Un régimen militar que tomó el poder por la fuerza.",
+                puntos: 10
+            },
+            {
+                pregunta: "¿Qué significó 'Nunca Más' para la sociedad argentina?",
+                opciones: ["Un movimiento de resistencia cultural.", "Un deseo de revolución social.", "El compromiso de no repetir los horrores de la dictadura."],
+                respuesta: "El compromiso de no repetir los horrores de la dictadura.",
+                puntos: 10
+            },
+            {
+                pregunta: "¿Qué papel tuvieron las Abuelas de Plaza de Mayo?",
+                opciones: ["Fueron líderes del gobierno militar.", "Buscaron a sus nietos desaparecidos durante la dictadura.", "Organizaron manifestaciones culturales."],
+                respuesta: "Buscaron a sus nietos desaparecidos durante la dictadura.",
+                puntos: 10
+            },
+            {
+                pregunta: "¿Qué significa 'Desaparecidos' en el contexto argentino?",
+                opciones: ["Personas que se escondieron de la dictadura.", "Personas que murieron en batallas.", "Personas secuestradas y asesinadas por el gobierno."],
+                respuesta: "Personas secuestradas y asesinadas por el gobierno.",
+                puntos: 10
+            }
+        ];
+
+        let preguntaActual = 0;
+        let puntaje = 0;
+
+        function empezar() {
+            mostrarPregunta();
+            document.getElementById('btnEmpezar').style.display = 'none';
+            document.getElementById('score').style.display = 'block';
+            actualizarPuntaje();
+        }
+
+        function mostrarPregunta() {
+            const pregunta = preguntasRespuestas[preguntaActual].pregunta;
+            const opciones = preguntasRespuestas[preguntaActual].opciones;
+            
+            document.getElementById('pregunta').textContent = pregunta;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            opciones.forEach((opcion, index) => {
+                const btn = document.createElement('button');
+                btn.textContent = opcion;
+                btn.classList.add('option-btn');
+                btn.setAttribute('onclick', `responder(${index})`);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function responder(opcionSeleccionada) {
+            const respuestaCorrecta = preguntasRespuestas[preguntaActual].respuesta;
+
+            if (preguntasRespuestas[preguntaActual].opciones[opcionSeleccionada] === respuestaCorrecta) {
+                alert('¡Respuesta correcta!');
+                puntaje += preguntasRespuestas[preguntaActual].puntos;
+                actualizarPuntaje();
+            } else {
+                alert('Respuesta incorrecta. La respuesta correcta es: ' + respuestaCorrecta);
+            }
+
+            preguntaActual++;
+            if (preguntaActual < preguntasRespuestas.length) {
+                mostrarPregunta();
+            } else {
+                alert('¡Fin del juego!');
+                reiniciarJuego();
+            }
+        }
+
+        function reiniciarJuego() {
+            preguntaActual = 0;
+            puntaje = 0;
+            document.getElementById('btnEmpezar').style.display = 'inline';
+            document.getElementById('pregunta').textContent = 'Presiona Empezar para iniciar el juego...';
+            document.getElementById('score').style.display = 'none';
+            actualizarPuntaje();
+        }
+
+        function actualizarPuntaje() {
+            document.getElementById('scoreValue').textContent = puntaje;
+        }
+    </script>
+</body>
+</html>
+
+
